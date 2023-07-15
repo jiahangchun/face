@@ -2,9 +2,18 @@ version: '3.4'
 
 services:
   queryface:
-    image: queryface
+    image: base/jdk20_graalvm
+    restart: always
     build:
       context: .
       dockerfile: ./Dockerfile
+    container_name: vscode_workstation
+    volumes:
+      # 挂载代码数据盘
+      - /f/:/code
+      # maven 代码库 未验证，需要自定义
+      # - "$HOME"/.m2:/root/.m2
     ports:
       - 3000:3000
+
+# 启动命令 docker-compose -f ./docker-compose.yml up -d

@@ -1,12 +1,12 @@
 package org.tool.controller;
 
-import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.shell.standard.ShellComponent;
 import org.springframework.shell.standard.ShellMethod;
 import org.springframework.shell.standard.ShellOption;
 import org.tool.Digest;
 
-import javax.annotation.Resource;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * @author Administrator
@@ -15,7 +15,7 @@ import javax.annotation.Resource;
 @Slf4j
 public class DownloadController {
 
-    @Resource
+    @Autowired
     private Digest digest;
 
 

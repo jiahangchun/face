@@ -1,9 +1,30 @@
-FROM openjdk:8-jdk-alpine
-VOLUME /tmp
-ARG JAVA_OPTS
-ENV JAVA_OPTS=$JAVA_OPTS
-COPY target/QueryFace-1.0-SNAPSHOT.jar queryface.jar
-EXPOSE 3000
-ENTRYPOINT exec java $JAVA_OPTS -jar queryface.jar
-# For Spring-Boot project, use the entrypoint below to reduce Tomcat startup time.
-#ENTRYPOINT exec java $JAVA_OPTS -Djava.security.egd=file:/dev/./urandom -jar queryface.jar
+FROM ubuntu:20.04
+
+RUN set -eux \
+    && apt-get update \
+    && DEBIAN_FRONTEND="noninteractive" apt-get -y install --no-install-recommends \
+        ca-certificates \
+        locales \
+        tzdata \
+        wget \
+        maven \
+        vim \
+        curl \
+        git \
+        openssh-server \
+    && rm -rf /var/lib/apt/lists/* \
+    && mkdir /var/run/sshd
+
+RUN apt-get clean
+
+# jar包方式安装jdk 可以指定未支持的高版本 这里设置了带graalvm的jdk20
+ENV JAVA_HOME /usr/local/java
+ENV PATH ${PATH}:${JAVA_HOME}/bin
+RUN wget --no-check-certificate -c --header "Cookie: oraclelicense=accept-securebackup-cookie" "https://download.oracle.com/graalvm/20/latest/graalvm-jdk-20_linux-x64_bin.tar.gz" -O /tmp/jdk.tar.gz 
+RUN tar xzf /tmp/jdk.tar.gz -C /usr/local/ 
+RUN mv /usr/local/graalvm-jdk-* ${JAVA_HOME}
+RUN rm -rf /tmp/jdk.tar.gz
+RUN java -version
+
+# 构建命令 docker build -t base/jdk20_graalvm .
+CMD ["/usr/sbin/sshd", "-D"]
